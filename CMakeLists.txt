@@ -18,7 +18,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(raylib)
 
-add_executable(main src/main.cpp "src/StateMachine.cpp"  "src/MenuState.cpp" "src/GameState.cpp" "src/PauseState.cpp" "src/AssetManager.cpp" "src/InputManager.cpp"  "src/Player.cpp" "src/Enemy.cpp"  "src/Coin.cpp" "src/GameOverState.cpp" "src/HUD.cpp" "src/Animation.cpp"   "src/Trophy.cpp"  "src/MoveLeftCommand.cpp" "src/MoveRightCommand.cpp" "src/JumpCommand.cpp" "src/Weapon.cpp" "src/AttackCommand.cpp" "src/StopMovingCommand.cpp" "src/SoundManager.cpp")
+add_executable(main src/main.cpp "src/StateMachine.cpp"  "src/MenuState.cpp" "src/GameState.cpp" "src/PauseState.cpp" "src/AssetManager.cpp" "src/InputManager.cpp"  "src/Player.cpp" "src/Enemy.cpp"  "src/Coin.cpp" "src/GameOverState.cpp" "src/HUD.cpp" "src/Animation.cpp"   "src/Trophy.cpp"  "src/MoveLeftCommand.cpp" "src/MoveRightCommand.cpp" "src/JumpCommand.cpp" "src/Weapon.cpp" "src/AttackCommand.cpp"  "src/SoundManager.cpp")
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE raylib)
 target_include_directories(main PRIVATE include)

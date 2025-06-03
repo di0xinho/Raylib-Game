@@ -1,52 +1,65 @@
-#pragma once
+ï»¿#pragma once
 
 #include "raylib.h"
+#include "Weapon.hpp"
 #include "Animation.hpp"
+#include "PlayerCommand.hpp"
 #include <cmath>
+#include <memory>
 #include <vector>
+#include <unordered_map>
 
 class Player {
 public:
 
-    // Konstruktory (domyœlny i z parametrami)
+    // Konstruktory (domyÅ›lny i z parametrami)
     Player();
     Player(Vector2 startPos,
         const std::vector<Texture2D*>& idleFrames,
         const std::vector<Texture2D*>& runFrames,
         const std::vector<Texture2D*>& jumpFrames);
 
-    // Aktualizuje animacje oraz stany gracza na podstawie wejœcia
+    // Aktualizuje animacje oraz stany gracza na podstawie wejÅ›cia
     void Update(float dt, bool isMoving, bool isJumping);
     // Rysuje gracza na ekranie
     void Draw();
 
-    // Aktualizuje fizykê gracza: kolizje, grawitacja, platformy
+
+    void handleInput(const std::unordered_map<int, bool>& keystates);
+    // Aktualizuje fizykÄ™ gracza: kolizje, grawitacja, platformy
     void PhysicsUpdate(float dt, const std::vector<Rectangle>& platforms, float groundY);
 
-    // Ustawia pozycjê gracza
+    // Ustawia pozycjÄ™ gracza
     void SetPosition(Vector2 pos);
-    // Zwraca pozycjê gracza
+    // Zwraca pozycjÄ™ gracza
     Vector2 GetPosition() const;
     // Przesuwa gracza o podany wektor (metoda pod zastosowanie efektu odrzutu)
     void MoveBy(Vector2 offset);
-    // Zwraca prostok¹t kolizyjny gracza
+    // Zwraca prostokÄ…t kolizyjny gracza
     Rectangle GetCollisionRect() const;
     // Zwraca rozmiar gracza
     Vector2 GetSize() const;
 
-    // Zwraca prêdkoœæ gracza (wektor prêdkoœci)
+    // Zwraca prÄ™dkoÅ›Ä‡ gracza (wektor prÄ™dkoÅ›ci)
     Vector2 GetVelocity() const;
-    // Ustawia prêdkoœæ gracza
+    // Ustawia prÄ™dkoÅ›Ä‡ gracza
     void SetVelocity(Vector2 vel);
     // Sprawdza, czy gracz stoi na ziemi
     bool IsOnGround() const;
-
-    // Ustawia dŸwiêk skoku
+    // PrÃ³buje rzuciÄ‡ broniÄ… i dodaje jÄ… do listy broni
+    void tryThrowWeapon(Texture2D* weaponTexture, std::vector<Weapon>& weaponList);
+    // Ustawia dÅºwiÄ™k skoku
     void SetJumpSound(Sound* sound);
-    // Ustawia dŸwiêk rzutu no¿em
+    // Ustawia dÅºwiÄ™k rzutu noÅ¼em
     void SetKnifeThrowSound(Sound* sound);
+    // Czy gracz moÅ¼e rzuciÄ‡ broniÄ… (czy cooldown siÄ™ skoÅ„czyÅ‚)
+    bool canShoot() const;
+    // Resetuje cooldown rzutu broniÄ…
+    void resetWeaponCooldown();
+    // Zwraca wskaÅºnik do dÅºwiÄ™ku rzucania noÅ¼em
+    Sound* getKnifeThrowSound() const;
 
-    // Rozpoczyna efekt mrugania na okreœlony czas
+    // Rozpoczyna efekt mrugania na okreÅ›lony czas
     void StartBlink(float duration);
     // Sprawdza, czy gracz aktualnie mruga
     bool IsBlinking() const;
@@ -62,27 +75,36 @@ public:
     // Atak gracza
     void Attack();
 
+    // Przypisuje komendÄ™ (wzorzec Command) do klawisza
+    void bindCommand(int key, std::unique_ptr<PlayerCommand> command);
+
+    // Mapa powiÄ…zaÅ„ klawiszy z komendami
+    std::unordered_map<int, std::unique_ptr<PlayerCommand>> commandMap;
+
 private:
     Vector2 position; // Pozycja gracza 
     Vector2 size; // Rozmiar gracza
-    bool facingRight; // Zwrócenie w praw¹ stronê
+    bool facingRight; // ZwrÃ³cenie w prawÄ… stronÄ™
 
-    Vector2 velocity{ 0, 0 }; // Prêdkoœæ
+    Vector2 velocity{ 0, 0 }; // PrÄ™dkoÅ›Ä‡
     bool onGround{ false }; // Czy gracz stoi na ziemii?
 
     // Efekt mrugania
     bool blinking = false;
     float blinkTimer = 0.0f;
     float blinkDuration = 0.0f;
-    float blinkFrequency = 12.0f; // ile "mrugniêæ" na sekundê
+    float blinkFrequency = 12.0f; // ile "mrugniÄ™Ä‡" na sekundÄ™
 
-    // Animacje dla pozostania gracza w spoczynku, biegania, skakania i wskaŸnik pod aktualn¹ animacjê
+    float weaponCooldown = 0.0f;       // Czas do koÅ„ca cooldownu dla rzutu broniÄ… 
+    float weaponCooldownDuration = 0.5f; // DÅ‚ugoÅ›Ä‡ trwania cooldownu dla rzutu broniÄ…
+
+    // Animacje dla pozostania gracza w spoczynku, biegania, skakania i wskaÅºnik pod aktualnÄ… animacjÄ™
     Animation idleAnim;
     Animation runAnim;
     Animation jumpAnim;
     Animation* currentAnim;
 
-    // DŸwiêki skakania i rzucania no¿em
+    // DÅºwiÄ™ki skakania i rzucania noÅ¼em
     Sound* jumpSound = nullptr;
     Sound* knifeThrowSound = nullptr;
 };

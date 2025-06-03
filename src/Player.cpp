@@ -19,6 +19,17 @@ Player::Player(Vector2 startPos, const std::vector<Texture2D*>& idleFrames, cons
     velocity({ 0,0 }), onGround(false), jumpSound(nullptr),
     blinking(false), blinkTimer(0), blinkDuration(0), blinkFrequency(12) {}
 
+// Obs³uga wejœcia: sprawdza, które klawisze s¹ wciœniête i wywo³uj¹ powi¹zane z nimi komendy
+void Player::handleInput(const std::unordered_map<int, bool>& keystates) {
+    velocity.x = 0;
+
+    for (const auto& [key, command] : commandMap) {
+        if (keystates.count(key) && keystates.at(key)) {
+            command->Execute(*this);
+        }
+    }
+}
+
 // Aktualizacja animacji i efektu mrugania
 void Player::Update(float dt, bool isMoving, bool isJumping)
 {
@@ -46,6 +57,8 @@ void Player::Update(float dt, bool isMoving, bool isJumping)
             blinkTimer = 0.0f;
         }
     }
+
+    if (weaponCooldown > 0.0f) weaponCooldown -= dt;
 
     // Aktualizacja klatki animacji
     if (currentAnim) currentAnim->Update(dt);
@@ -175,6 +188,21 @@ void Player::SetJumpSound(Sound* sound) { jumpSound = sound; }
 // Ustawia dŸwiêku rzutu no¿em gracza
 void Player::SetKnifeThrowSound(Sound* sound) { knifeThrowSound = sound; }
 
+// Zwraca wskaŸnik do dŸwiêku rzucania no¿em
+Sound* Player::getKnifeThrowSound() const {
+    return knifeThrowSound;
+}
+
+// Zwraca, czy gracz mo¿e rzuciæ broni¹ (cooldown)
+bool Player::canShoot() const {
+    return weaponCooldown <= 0.0f;
+}
+
+// Resetuje cooldown rzutu broni¹
+void Player::resetWeaponCooldown() {
+    weaponCooldown = weaponCooldownDuration;
+}
+
 // Rozpoczêcie efektu mrugania na okreœlony czas
 void Player::StartBlink(float duration) {
     blinking = true;
@@ -185,4 +213,21 @@ void Player::StartBlink(float duration) {
 // Sprawdzenie, czy gracz mruga
 bool Player::IsBlinking() const {
     return blinking;
+}
+
+// Przypisuje komendê do klawisza
+void Player::bindCommand(int key, std::unique_ptr<PlayerCommand> command) {
+    commandMap[key] = std::move(command);
+}
+
+// Rzut broni¹, tworzy nowy obiekt Weapon i dodaje go do listy
+void Player::tryThrowWeapon(Texture2D* weaponTexture, std::vector<Weapon>& weaponList) {
+    
+    Vector2 playerPosition = GetPosition();
+
+    Weapon weapon = Weapon({ playerPosition.x, playerPosition.y + (GetSize().y / 2.f)}, 500.0f, 5.0f, weaponTexture);
+
+    weaponList.emplace_back(weapon);
+
+    resetWeaponCooldown();
 }

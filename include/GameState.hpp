@@ -7,7 +7,6 @@
 #include "State.hpp"
 #include "MoveLeftCommand.hpp"
 #include "MoveRightCommand.hpp"
-#include "StopMovingCommand.hpp"
 #include "JumpCommand.hpp"
 #include "AttackCommand.hpp"
 #include "Player.hpp"
@@ -82,13 +81,6 @@ private:
     Sound* attackSound = nullptr;
     Sound* ouchSound = nullptr;
     Sound* coinCollectSound = nullptr;
-
-    // Komendy do sterowania
-    MoveLeftCommand moveLeftCmd;
-    MoveRightCommand moveRightCmd;
-    JumpCommand jumpCmd;
-    AttackCommand attackCmd;
-    StopMovingCommand stopMovingCmd;
 
     // HUD pod pokazywanie aktualnego zdrowia i wyniku
     HUD hud;

@@ -121,6 +121,12 @@ void GameState::Init()
     enemies.push_back(Enemy({ 2000, (float)(groundY - 50) }, enemyFrames, ouchSound));
     enemies.push_back(Enemy({ 2400, (float)(groundY - 50) }, enemyFrames, ouchSound));
 
+    // Bindowanie klawiszy pod wybrane akcje
+    player.bindCommand(KEY_LEFT, std::make_unique<MoveLeftCommand>());
+    player.bindCommand(KEY_RIGHT, std::make_unique<MoveRightCommand>());
+    player.bindCommand(KEY_ENTER, std::make_unique<AttackCommand>(weaponTexture, weapons));
+    player.bindCommand(KEY_SPACE, std::make_unique<JumpCommand>());
+
     // Utworzenie trofeum pod zakoñczenie gry
     trophy = Trophy({ 3100, groundY - (float)trophyTexture->height }, trophyTexture);
 
@@ -137,30 +143,17 @@ void GameState::HandleInput() {
         _data->machine.AddState(std::make_unique<PauseState>(_data), false);
         return;
     }
+
+    // Obs³uga komend gracza (wzorzec Command)
+    std::unordered_map<int, bool> keystates;
+    for (const auto& [key, _] : player.commandMap) {
+        keystates[key] = _data->inputManager->isKeyDown(key);
+    }
+    player.handleInput(keystates);
 }
 
 void GameState::Update(float dt)
 {
-    // Obs³uga wejœcia 
-    if (_data->inputManager->isKeyDown(KEY_LEFT)) {
-        moveLeftCmd.Execute(player); // Chodzenie w lewo
-    }
-    else if (_data->inputManager->isKeyDown(KEY_RIGHT)) {
-        moveRightCmd.Execute(player); // Chodzenie w prawo
-    }
-    else {
-        stopMovingCmd.Execute(player); // Zatrzymanie siê postaci
-    }
-
-    if (_data->inputManager->isKeyPressed(KEY_SPACE)) {
-        jumpCmd.Execute(player); // Skakanie
-    }
-
-    if (_data->inputManager->isKeyPressed(KEY_ENTER)) {
-        attackCmd.Execute(player); // Atakowanie
-        weapons.emplace_back(player.GetPosition(), 500.0f, 5.0f, weaponTexture);
-    }
-
     // Aktualizacja strumienia muzyki
     UpdateMusicStream(*gameMusic);
 
