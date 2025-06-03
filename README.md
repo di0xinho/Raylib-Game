@@ -1,4 +1,4 @@
-# Gra stworzona z użyciem biblioteki Raylib
+# Gra platformowa stworzona z użyciem biblioteki Raylib
 
 ## Opis projektu
 
