@@ -35,6 +35,8 @@ public:
     Vector2 GetPosition() const;
     // Przesuwa gracza o podany wektor (metoda pod zastosowanie efektu odrzutu)
     void MoveBy(Vector2 offset);
+    // Ogranicza pozycję gracza do przedziału minX-maxX
+    void constrainToBounds(float minX, float maxX);
     // Zwraca prostokąt kolizyjny gracza
     Rectangle GetCollisionRect() const;
     // Zwraca rozmiar gracza

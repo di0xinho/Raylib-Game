@@ -159,6 +159,7 @@ void GameState::Update(float dt)
 
     float groundY = GetScreenHeight() - landTexture->height;
     player.PhysicsUpdate(dt, platforms, groundY);
+    player.constrainToBounds(0, 3200);
 
     // Aktualizacja zdarzeñ dla monet 
     for (auto& coin : coins) {

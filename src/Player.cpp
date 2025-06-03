@@ -158,6 +158,18 @@ void Player::PhysicsUpdate(float dt, const std::vector<Rectangle>& platforms, fl
     position.y = newY;
 }
 
+// Ogranicza ruch gracza do okreœlonych granic X
+void Player::constrainToBounds(float minX, float maxX) {
+    if (position.x < minX) {
+        position.x = minX;
+        velocity.x = 0;
+    }
+    if (position.x + GetSize().x > maxX) {
+        position.x = maxX - GetSize().x;
+        velocity.x = 0;
+    }
+}
+
 // Zwraca prêdkoœæ gracza
 Vector2 Player::GetVelocity() const { return velocity; }
 
